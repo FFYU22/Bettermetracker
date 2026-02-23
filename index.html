@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetterMe Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #2c5aa0 0%, #1a2a4a 50%, #0f1820 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            background: linear-gradient(to bottom, #f5f0e8 0%, #faf8f3 100%);
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            padding: 80px 60px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 600px;
+            gap: 30px;
+        }
+
+        .login-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .login-left h1 {
+            color: #0a0a0a;
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .login-left .tagline {
+            color: #0066e6;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .login-left .description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .login-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .login-form input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .login-form input::placeholder {
+            color: #bbb;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #0066e6;
+        }
+
+        .login-form button {
+            padding: 14px 32px;
+            background: #0066e6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .login-form button:hover {
+            background: #0052cc;
+        }
+
+        .login-note {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .login-right {
+            background: #1a2b3d;
+            border-radius: 16px;
+            padding: 40px;
+            color: white;
+        }
+
+        .login-right h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .momentum-item {
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .momentum-item strong {
+            color: #ffa500;
+            font-weight: 700;
+        }
+
+        .momentum-item span {
+            color: #aaa;
+        }
+
+        /* APP SCREEN */
+        .app-screen {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            padding: 50px;
+            display: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header-left h1 {
+            color: #0a0a0a;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-left .tagline {
+            color: #0066e6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #0066e6;
+            font-size: 15px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .logout-btn:hover {
+            background: #e67e00;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 28px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e5e5e5;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: 700;
+            color: #0066e6;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .add-habit-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 35px;
+            padding: 16px;
+            background: #1a2b3d;
+            border-radius: 12px;
+        }
+
+        .add-habit-section input {
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .add-habit-section input::placeholder {
+            color: #bbb;
+        }
+
+        .add-habit-section input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #ff8c00;
+        }
+
+        .add-habit-section button {
+            padding: 14px 28px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .add-habit-section button:hover {
+            background: #e67e00;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .tab-btn {
+            padding: 12px 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #999;
+            font-size: 15px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            color: #0066e6;
+            border-bottom-color: #0066e6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .habits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .habit-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #e5e5e5;
+        }
+
+        .habit-info {
+            flex: 1;
+        }
+
+        .habit-name {
+            font-weight: 600;
+            color: #0a0a0a;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        .habit-streak {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .check-btn {
+            padding: 10px 18px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .check-btn:hover {
+            background: #45a049;
+        }
+
+        .check-btn.checked {
+            background: #66bb6a;
+        }
+
+        .remove-btn {
+            padding: 10px 18px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .remove-btn:hover {
+            background: #e67e00;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 60px 20px;
+            font-size: 16px;
+        }
+
+        .habit-chart {
+            background: #f8f9fa;
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .habit-chart h3 {
+            color: #0a0a0a;
+            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        @media (max-width: 1024px) {
+            .login-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-screen {
+                padding: 30px;
+            }
+
+            .login-screen {
+                padding: 40px 25px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .add-habit-section {
+                flex-direction: column;
+            }
+
+            .login-form {
+                flex-direction: column;
+            }
+
+            .login-form input,
+            .login-form button {
+                width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-screen" id="loginScreen">
+            <div class="login-content">
+                <div class="login-left">
+                    <h1>BetterMe Tracker</h1>
+                    <p class="tagline">be the better version of yourself</p>
+                    <p class="description">Design daily rituals, stay accountable, and see measurable progress in moments that matter.</p>
+                    <div class="login-form">
+                        <input type="text" id="nameInput" placeholder="Enter your name..." />
+                        <button onclick="login()">Start Tracking</button>
+                    </div>
+                    <p class="login-note">Each person gets their own separate account</p>
+                </div>
+                <div class="login-right">
+                    <h3>Momentum, summarized</h3>
+                    <div class="momentum-item">
+                        <strong>Clarity:</strong> <span>map the habits that move the needle.</span>
+                    </div>
+                    <div class="momentum-item">
+                        <strong>Consistency:</strong> <span>celebrate streaks, not perfection.</span>
+                    </div>
+                    <div class="momentum-item">
+                        <strong>Focus:</strong> <span>use data to guide the next step.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- App Screen -->
+        <div class="app-screen" id="appScreen">
+            <div class="header">
+                <div class="header-left">
+                    <h1>BetterMe Tracker</h1>
+                    <p class="tagline">be the better version of yourself</p>
+                </div>
+                <div class="header-right">
+                    <span class="user-name" id="currentUser"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalHabits">0</div>
+                    <div class="stat-label">Total Habits</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="completedToday">0</div>
+                    <div class="stat-label">Completed Today</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="bestStreak">0</div>
+                    <div class="stat-label">Best Streak</div>
+                </div>
+            </div>
+
+            <div class="add-habit-section">
+                <input type="text" id="habitInput" placeholder="Add a new habit..." />
+                <button onclick="addHabit()">Add Habit</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('daily')">Daily Tracker</button>
+                <button class="tab-btn" onclick="switchTab('charts')">Progress Charts</button>
+            </div>
+
+            <!-- Daily Tracker Tab -->
+            <div class="tab-content active" id="tab-daily">
+                <div class="habits-list" id="habitsList">
+                    <div class="empty-state">No habits yet. Add one to get started! 🚀</div>
+                </div>
+            </div>
+
+            <!-- Charts Tab -->
+            <div class="tab-content" id="tab-charts">
+                <div id="chartsContainer">
+                    <div class="empty-state">Add habits to see your progress charts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const USERS_KEY = 'all_users';
+        const CURRENT_USER_KEY = 'current_user';
+
+        function getCurrentUser() {
+            return localStorage.getItem(CURRENT_USER_KEY);
+        }
+
+        function setCurrentUser(username) {
+            localStorage.setItem(CURRENT_USER_KEY, username);
+        }
+
+        function getUserData(username) {
+            const users = JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+            if (!users[username]) {
+                users[username] = { habits: [] };
+                localStorage.setItem(USERS_KEY, JSON.stringify(users));
+            }
+            return users[username];
+        }
+
+        function saveUserData(username, data) {
+            const users = JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+            users[username] = data;
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function login() {
+            const nameInput = document.getElementById('nameInput');
+            const username = nameInput.value.trim();
+
+            if (!username) {
+                alert('Please enter your name');
+                return;
+            }
+
+            setCurrentUser(username);
+            nameInput.value = '';
+            showApp();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem(CURRENT_USER_KEY);
+                document.getElementById('appScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+            }
+        }
+
+        function showApp() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return;
+
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUser;
+            renderHabits();
+            updateStats();
+        }
+
+        function getToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function addHabit() {
+            const input = document.getElementById('habitInput');
+            const habitName = input.value.trim();
+            const currentUser = getCurrentUser();
+
+            if (!habitName) {
+                alert('Please enter a habit name');
+                return;
+            }
+
+            const userData = getUserData(currentUser);
+            const newHabit = {
+                id: Date.now(),
+                name: habitName,
+                createdDate: getToday(),
+                history: {}
+            };
+
+            userData.habits.push(newHabit);
+            saveUserData(currentUser, userData);
+            input.value = '';
+            renderHabits();
+            updateStats();
+        }
+
+        function toggleHabit(id) {
+            const currentUser = getCurrentUser();
+            const userData = getUserData(currentUser);
+            const today = getToday();
+            const habit = userData.habits.find(h => h.id === id);
+
+            if (habit) {
+                if (!habit.history) habit.history = {};
+                habit.history[today] = !habit.history[today];
+                saveUserData(currentUser, userData);
+                renderHabits();
+                updateStats();
+            }
+        }
+
+        function deleteHabit(id) {
+            if (confirm('Are you sure you want to delete this habit?')) {
+                const currentUser = getCurrentUser();
+                const userData = getUserData(currentUser);
+                userData.habits = userData.habits.filter(h => h.id !== id);
+                saveUserData(currentUser, userData);
+                renderHabits();
+                updateStats();
+            }
+        }
+
+        function renderHabits() {
+            const currentUser = getCurrentUser();
+            const userData = getUserData(currentUser);
+            const habitsList = document.getElementById('habitsList');
+            const today = getToday();
+
+            if (userData.habits.length === 0) {
+                habitsList.innerHTML = '<div class="empty-state">No habits yet. Add one to get started! 🚀</div>';
+                return;
+            }
+
+            habitsList.innerHTML = userData.habits.map(habit => {
+                const isCompleted = habit.history && habit.history[today];
+                const totalCompleted = Object.values(habit.history || {}).filter(v => v).length;
+                return `
+                    <div class="habit-item">
+                        <div class="habit-info">
+                            <div class="habit-name">${habit.name}</div>
+                            <div class="habit-streak">Total completed: ${totalCompleted} days</div>
+                        </div>
+                        <div class="habit-actions">
+                            <button class="check-btn ${isCompleted ? 'checked' : ''}" onclick="toggleHabit(${habit.id})">
+                                ${isCompleted ? '✓ Check' : 'Check'}
+                            </button>
+                            <button class="remove-btn" onclick="deleteHabit(${habit.id})">Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            const currentUser = getCurrentUser();
+            const userData = getUserData(currentUser);
+            const today = getToday();
+
+            const completed = userData.habits.filter(h => h.history && h.history[today]).length;
+            let bestStreak = 0;
+
+            userData.habits.forEach(habit => {
+                const total = Object.values(habit.history || {}).filter(v => v).length;
+                if (total > bestStreak) bestStreak = total;
+            });
+
+            document.getElementById('totalHabits').textContent = userData.habits.length;
+            document.getElementById('completedToday').textContent = completed;
+            document.getElementById('bestStreak').textContent = bestStreak;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'charts') {
+                renderCharts();
+            }
+        }
+
+        function renderCharts() {
+            const currentUser = getCurrentUser();
+            const userData = getUserData(currentUser);
+            const chartsContainer = document.getElementById('chartsContainer');
+
+            if (userData.habits.length === 0) {
+                chartsContainer.innerHTML = '<div class="empty-state">Add habits to see your progress charts</div>';
+                return;
+            }
+
+            chartsContainer.innerHTML = userData.habits.map(habit => {
+                return `
+                    <div class="habit-chart">
+                        <h3>${habit.name}</h3>
+                        <div class="chart-container">
+                            <canvas id="chart-${habit.id}"></canvas>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            userData.habits.forEach(habit => {
+                renderHabitChart(habit);
+            });
+        }
+
+        function renderHabitChart(habit) {
+            const history = habit.history || {};
+            
+            // Use creation date, or fall back to first completion date for older habits
+            const startDate = habit.createdDate || Object.keys(history).sort()[0];
+            
+            if (!startDate) {
+                return;
+            }
+            
+            const firstDate = new Date(startDate);
+            const today = new Date(getToday());
+            // Extend 90 days into the future
+            const lastDate = new Date(today);
+            lastDate.setDate(lastDate.getDate() + 90);
+            
+            const dateRange = [];
+            let currentDate = new Date(firstDate);
+            while (currentDate <= lastDate) {
+                dateRange.push(currentDate.toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            const data = dateRange.map(date => {
+                if (date > getToday()) {
+                    return null; // Future dates show as empty
+                }
+                return history[date] ? 1 : 0;
+            });
+            const labels = dateRange.map(date => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+            const ctx = document.getElementById(`chart-${habit.id}`);
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Completed',
+                        data: data,
+                        backgroundColor: '#0066e6',
+                        borderColor: '#0066e6',
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+            showApp();
+        }
+
+        document.getElementById('habitInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addHabit();
+        });
+
+        document.getElementById('nameInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
